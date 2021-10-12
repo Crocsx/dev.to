@@ -1,0 +1,31 @@
+{
+  "name": "dev.to",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Crocsx/dev.to.git"
+  },
+  "scripts": {
+    "prettier": "prettier",
+    "embedme": "embedme blog-posts/**/*.md",
+    "prettier:base": "npm run prettier \"**/*.md\"",
+    "prettier:write": "npm run prettier:base --write",
+    "prettier:check": "npm run prettier:base --list-different",
+    "embedme:check": "npm run embedme --verify",
+    "embedme:write": "npm run embedme",
+    "dev-to-git": "dev-to-git"
+  },
+  "dependencies": {
+    "dev-to-git": "^1.4.8",
+    "embedme": "^1.22.0",
+    "prettier": "^2.4.1"
+  },
+  "description": "Management Repository for my dev.to blog",
+  "bugs": {
+    "url": "https://github.com/Crocsx/dev.to/issues"
+  },
+  "homepage": "https://github.com/Crocsx/dev.to#readme",
+  "devDependencies": {},
+  "keywords": [],
+  "author": "Crocsx",
+  "license": "ISC"
+}
