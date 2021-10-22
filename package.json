@@ -6,8 +6,8 @@
   },
   "scripts": {
     "prettier": "prettier",
-    "embedme": "embedme blog-posts/**/*.md",
-    "prettier:base": "npm run prettier \"**/*.md\"",
+    "embedme": "embedme blog-posts/**/post.*.md",
+    "prettier:base": "npm run prettier \"**/post.*.md\"",
     "prettier:write": "npm run prettier:base --write",
     "prettier:check": "npm run prettier:base --list-different",
     "embedme:check": "npm run embedme --verify",
