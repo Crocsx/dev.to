@@ -24,11 +24,7 @@ export function App() {
   
   return (
     <div className={styles.app}>
-      <demo-title title={"React"} />
-      <demo-title-colored title={"React"} />
-      <demo-object dataPerson={JSON.stringify(person)}/>
       <demo-profile ref={profile}/>
-      <demo-counter ref={counter} userClick={(e: Event) =>  console.log(e)} />
     </div>
   );
 }

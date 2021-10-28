@@ -1,5 +1,9 @@
 [
     {
+        "id": 879386,
+        "relativePathToArticle": "./blog-posts/share-component-across-front-end-framework-using-nx-and-web-component/post.part2.md"
+    },
+    {
         "id": 872143,
         "relativePathToArticle": "./blog-posts/share-component-across-front-end-framework-using-nx-and-web-component/post.part1.md"
     },
@@ -7,4 +11,5 @@
         "id": 847261,
         "relativePathToArticle": "./blog-posts/introduction-to-nx-and-monorepo/post.md"
     }
+
 ]
