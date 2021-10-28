@@ -1,33 +1,46 @@
 ---
-published: false
+published: true
 title: "Share Components across Front Ends frameworks using Nx and Web Components"
 cover_image: "https://raw.githubusercontent.com/Crocsx/dev.to/main/blog-posts/share-component-across-front-end-framework-using-nx-and-web-component/assets/Cover.png"
-description: "Create a Web Component library and use it across your Front-end frameworks"
+description: "Create a Web Component library and use it across your Front-end frameworks - part 2"
 tags: webdev, nx, webcomponents, frontend, react, angular
-canonical_url: "https://crocsx.hashnode.dev/share-components-across-front-ends-frameworks-using-nx-and-web-components"
+canonical_url: "https://crocsx.hashnode.dev/share-components-across-front-ends-frameworks-using-nx-and-web-components-part-2"
 ---
-This is the second of a three parts Guides:
 
-- Part 1 - Project Setup and Introduction to Web Component
-- Part 2 - Add Custom Style and Property Binding
-- Part 3 - Output Event and Allow Retrocompatibility
+This is the second of three Part Guides:
 
-
-**Part 2 - Add Custom Style and Property Binding**
+- [Part 1 - Project Setup and Introduction to Web Component](https://crocsx.hashnode.dev/share-components-across-front-ends-frameworks-using-nx-and-web-components)
+- [Part 2 - Add Custom Style and Property Binding](https://crocsx.hashnode.dev/share-components-across-front-ends-frameworks-using-nx-and-web-components-part-2) 
+- Part 3 - Output Event and Allow Retrocompatibility. (In Progress)
 
 
-In Part One, we introduced Web Component, what they are and how to use them. We also created and set up an Nx workspace with an Angular and React project using a Web Component library. We created a title element that would "listen" to an `attributes` and change the content of the `DOM`. In this second part, we will go further, create an event, assign properties, and add some polyfill to make our Web Component retro compatible.
+## Part 2 - Add Custom Style and Property Binding
 
-1. Style our Web Component
+In part one, we introduced Web Components, what they are and how to use them. We also created and set up an Nx workspace with an Angular and React project alongside a shared Web Components library. We created a custom element that "listens" to the attribute `title` and changed the `DOM` content accordingly. In this second part, we are going further by styling and assigning properties to our Web Components.
 
-Our Web Component works, but they are very flat at the moment. It would be great to add some CSS to it. We could create a CSS class, add a global stylesheet with some rules for that class, and it would work. But the logic of Web Component is having a fully independent component that would be auto sufficient and does not require anything from the "outside". Adding a global class for each component would also turn very quickly into a gigantic file full of rules, where we would have to take care not to reuse the same name multiple times not to pollute various components.
+### 1. Style our Web Component
 
-Hopefully, Web Components allow us to use Shadow DOM, keeping the markup structure, style, and behavior hidden and separate from other code on the page. Different parts of our code will not clash and can be kept nice and clean.
+Our Web Component works, but they are very flat at the moment. It would be great to add some CSS to it. You may want to add a CSS class to our title and create a global stylesheet with some rules, and it would work. But the idea behind Web Components is creating fully independent elements that are auto-sufficient and do not require anything from the "outside". Adding a global CSS class would affect every element on our page and quickly turn into a gigantic file full of rules.
 
-In our previously setup library, let's create a new title component (or edit the current one) where we will display the same title as before, but with some custom styling.
+Hopefully, Web Components allow us to use [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM), which makes us able to keep the markup structure, style, and behavior hidden and separate from other code on the page. Thanks to it, elements will not clash, and the code will be kept simple and clean.
 
-We are first going to create a template outside of our class 
-We were previously injecting in the HTML our elements :
+Let's head back to our library (set up in part one) and edit our title component (or create a new title element).
+
+If you still have what we worked on, it should look like this (I removed the logs) :
+
+```
+export class DemoTitleElement extends HTMLElement {
+    public static observedAttributes = ['title'];
+ 
+    attributeChangedCallback(name: string, old: string, value: string) {
+      this.innerHTML = `<h1>Welcome From ${this.title}!</h1>`;
+    }
+}
+    
+customElements.define('demo-title', DemoTitleElement);
+```
+
+In the above example, we just replaced the entire HTML inside our element for every update on our attribute `title`:
 
 ```
     attributeChangedCallback(name: string, old: string, value: string) {
@@ -35,9 +48,11 @@ We were previously injecting in the HTML our elements :
     }
 ``` 
 
-But this wouldn't allow us to add some `<style>` at runtime. Also, we are going to make much more significant structures, and having to reuse the same markup structures repeatedly is quite painful; it would be great to have some kind of [template](Using templates and slots - Web Components | MDN (mozilla.org))... 
+As you may know, this method doesn't allow us to append some `<style>` tag. Therefore, we are unable to create new styles unless we manually write a class and add some global rules. Also, this approach is pretty poor in performance, as we recreate all the content for every change of our attribute. It would be great to have some kind of template... 
 
-Well, it turns out there is one; outside of our class, create a template and add the styling you like :
+Well, it turns out there is [template](Using templates and slots - Web Components | MDN (mozilla.org)) element that would suit our need! Templates are not rendered in the DOM, but can still be referenced via Javascript. We can then clone this template inside our Shadow DOM once and access it across our components. 
+
+Let's create one outside of our component class and assign the styles we like.
 
 ```
 const template = document.createElement('template');
@@ -49,12 +64,14 @@ template.innerHTML = `<style>
   <h1>Welcome From <span id="title"></span>!</h1>`;
 ```
 
-Note that I added a `span` with an `id` around the value place we would like to update. This will come in handy when changing the DOM using the attribute (instead of what we were doing before `${this.title}`)
+You will notice I added a `span` with an `id` where we would like to write the dynamic title. It will come in handy for updating our DOM without having to recreate the template entirely.  
 
-Templates are not rendered in the DOM but can still be referenced via Javascript. We are going to need to add it inside our Shadow DOM. To do this, add a constructor method to your Web Component and write the following :
+Now in our Component `constructor`, attach a Shadow DOM, and append our template to it.
 
 ```
 export class DemoTitleColoredElement extends HTMLElement {
+    public static observedAttributes = ['title'];
+
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
@@ -68,7 +85,9 @@ Here is what we added
 - `attachShadow`attaches a shadow DOM tree to the specified element and returns a reference to its ShadowRoot. There can be two different `encapsulation modes`. `open` means elements of the shadow root are accessible from JavaScript outside the root while `closed` Denies access to the node(s) of a closed shadow root from JavaScript outside
 - `this.shadowRoot!.appendChild` we are adding our template to the shadow Root and using `template.content.cloneNode(true)` we are cloning all the DOM element we defined in the template.
 
-Finally, when the attribute change, let's update our template. Right now, we only observe a single attribute, so we can simply do : 
+Now, this is much better; our template is cloned once and will be available through `shadowRoot` inside the component. 
+
+When the attribute change, we can now update what interests us inside the template. As we only care about the `title` attribute, we can simply add the following.
 
 ```
     attributeChangedCallback() {
@@ -76,7 +95,7 @@ Finally, when the attribute change, let's update our template. Right now, we onl
     }
 ```
 
-We should end up with something similar to this,
+We should end up with a component similar to this :
 
 ```
 const template = document.createElement('template');
@@ -104,22 +123,27 @@ export class DemoTitleColoredElement extends HTMLElement {
 customElements.define('demo-title-colored', DemoTitleColoredElement);
 ```
 
-Nice! Remember to add this new element to your library's export and try it on your Angular and React project. I kept the old title we created before and the new one on the bottom. What we expect is our old title remain Black, while our new title should be Red (and do not affect other `h1` outside of it)
-
-![Angular With Red and Black Title](./assets/images/AngularRed.png "Angular With Red and Black Title")
+Nice! Remember to add this new element to your library's export and try it on your Angular and/or React project. I added the old title we created previously and the new one on the bottom. What we expect to see is our old title to remain Black, while our new title should be Red (and do not affect `h1` outside of it)
+```
+<demo-title [title]="'Angular'"></demo-title>
+<demo-title-colored [title]="'Angular'"></demo-title-colored>
+```
+![Angular Red Black Title](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ukfeivmufx3a45rn5v7d.png "Angular Red Black Title")
 
 AWESOME! Our style is applied only to our Component!
 
 
-2. Passing Object via Attributes
+## 2. Passing object to Web Components
 
 One common thing we would like to do is pass objects to our Web Component, and not just simple strings.
 
-Since Web Component `attributeChangedCallback` and `observedAttributes` works with `attribute`, one way would be to stringify our object and pass it via the attribute `data-*` to keep our HTML valid.
+Since Web Component `attributeChangedCallback` and `observedAttributes` works exclusively with `attribute`, a possible solution would be to stringify objects and pass them via the attribute [`data-*`](https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes) and our HTML would remain valid.
 
-Let's try this first :
+Let's try this first, we are going to pass a person `object` to our Web Component and simply display that person's name.
 
-Create a new element in our library, and for the `observedAttributes`, let's add the following :
+### 2.1 Passing objects via attributes 
+
+In our library, create a new element that will observe a custom attribute named `data-person`
 
 ```
 export class DemoObjectElement extends HTMLElement {
@@ -133,7 +157,9 @@ export class DemoObjectElement extends HTMLElement {
 customElements.define('demo-object', DemoObjectElement);
 ```
 
-Add this new element to your library's exports and head up to Angular/React. Create an object `person` like the following:
+Add this new element to your library's exports, and let's first use it in Angular.
+
+Inside `app.component.ts` create this object :
 ```
   person = {
     firstName: 'Jack',
@@ -141,36 +167,53 @@ Add this new element to your library's exports and head up to Angular/React. Cre
   }
 ```
 
-and pass it to our web component 
+Move to the `app.component.html` add and assign our object to our web component. You have to specify Angular to use `attribute` by prefixing our binding with `attr.person`
 
 ```
 <demo-object [attr.data-person]="person"></demo-object>
 ```
 
-You will see that our Web Component log will look like this: 
+You will see that our Web Component log will look like this : 
 > Attribute data-person value: [object Object]
 
-That's not great. To pass the entire object, we will need to stringify it first and parse it later.
+Which is not what we want... To receive the entire object, we will need to use `JSON.stringify` first and then `JSON.parse`...
 
-in our angular component, add the following line :
+Update our Angular `app.component.ts` with the following line :
 ```
 JSON = JSON;
 ```
 
-in the template 
+and the template 
 ```
 <demo-object [data-person]="JSON.stringify(person)"></demo-object>
 ```
-It will not works correctly : 
+
+You can also update our Web Component log to display the value as an `object`
+```
+console.log(`Attribute ${name} value:`, JSON.parse(value));
+```
+It will now display our object as expected : 
 > Attribute data-person value: {"firstName":"Jack","lastName":"Doe"}
 
-This is enough in a few cases, but we do not want to pollute attributes too much with big objects that must be parsed at every change. What about passing things as properties instead? Well, we can, but it is a bit less straightforward. 
+For React, it is very similar. Open `app.tsx` and just add the following :
 
-2. Passing Object via Properties
+```
+  return (
+    <div className={styles.app}>
+      <demo-object dataPerson={JSON.stringify(person)}/>/>
+    </div>
+  );
+```
 
-Web Components are treated as basic HTML, so the way to pass property changes a little if you are on Angular or in React. We will first need to set up our component to accept property values. Since Web Components works with `attributes`, we will manually detect property changes and call our method ourselves.
+Since our Web Components are "natives" HTML elements, just assigning `dataPerson` will change the attribute `data-person`.
 
-For this example, we are going to create a simple `Profile` element that will display the `firstName` and `LastName` 
+Passing objects as attributes is enough in some cases where we just want to assign small objects. But ideally, we do not wish to pollute attributes, and worst, assign objects that will need to be stringified and parsed at every change. What about passing things as properties instead? Well, we can, but it is a bit harder. 
+
+### 2.2 Passing Object via Properties
+
+To allow our Web Component to receive properties, we first need to change a few things in the code. Web Components lifecycle works with `attributes` so we are required to manually detect property changes, and call our method ourselves. Additionally, as stated in the last part, Web Components are consumed like basic HTML, therefor passing property to HTML elements varies depending on the framework we use. 
+
+While we are at changes, let's also display the person's name and not just log it. Create a template in our component to do so.
 
 ```
 const template = document.createElement('template');
@@ -190,8 +233,7 @@ template.innerHTML = `
 </p>`;
 ```
 
-Let's now add some code to the component that we need.
-The property we want to use :
+Let's now change our component code.  Assuming I would like to pass a property named `person` to my Web Component. If we do all like we are used to doing until now, we would be doing the following.
 
 ```
 export class DemoProfileElement extends HTMLElement {
@@ -216,11 +258,11 @@ export class DemoProfileElement extends HTMLElement {
   customElements.define('demo-profile', DemoProfileElement);
 ```
 
-Now the above will not work, and your Typescript should already guide you to the why. `person` is not an HTML attribute, so `this.person` is not defined. Additionally, the `attributeChangedCallback` will never be called since `observedAttributes = ['person'];` can't observe attributes that do not exist.
+But as your Typescript might tell, `person` is not an HTML attribute, so `this.person` is not defined. Additionally, the `attributeChangedCallback` will never be called since `observedAttributes = ['person'];` can't observe attributes that do not exist.
 
-To fix this and make it work, we need to forget about what we did until now and implement our way to detect changes, like if it was a simple Typescript Class. You can try to fix it by yourself or just scroll for the solution.
+To fix this and make it work, we need to forget about what we did until now and implement our way to detect changes, like if we were coding a simple Typescript Class. You can try to fix it by yourself or just scroll for the solution.
 
-We will need a property in our class `_person` and a `get/set` assigned to that property.
+We going to need a property in our class I chose `_person`, and a `get/set` that will assign to that property
 
 ```
 export class DemoProfileElement extends HTMLElement {
@@ -252,13 +294,11 @@ export class DemoProfileElement extends HTMLElement {
 customElements.define('demo-profile', DemoProfileElement);
 ```
 
-Nothing incredible; we just use a get/set to check when the property is updated and update our DOM accordingly.
+Yes, we just use a get/set to check when the property is updated and update our DOM accordingly.
 
-Now, the way to pass objects via property varies between React and Angular. Let's see how in Angular first. Don't forget to add this new element to your library's export!
+Let's try this in Angular, but before, don't forget to add this new element to your library's export!
 
-2.1 Angular property binding. 
-
-When passing Input to a component in Angular, Angular will first assign it as a property if that value exists in the element, and only after it use it as an attribute if a match couldn't be found. This makes a property to Web Component with Angular relatively easy since we do not have to do anything special.
+When passing Input to a component, Angular will assign it as a property of that element. It makes things simple for us, as we do not need to change much.
 
 In your Angular app, just add this line : 
 
@@ -266,17 +306,17 @@ In your Angular app, just add this line :
 <demo-profile [person]="person"></demo-profile>
 ```
 
-And that's it!
-![Angular With Person Profile](./assets/images/AngularName.png "Angular With Person Profile")
+And that's it! 
 
-2.2 React property binding.
+![Angular With Profile Name](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/8g5c0cj6d7ag17lodemn.png "Angular With Profile Name")
 
-In React, things are a bit different. React pass props as JSX Attributes, and therefore, simply doing `<demo-profile person={person} />` will not work. We need to treat our Web Component as what it is, an HTML Element. We need to get the reference and assign to it the property.
 
-In your React app, add a Reference to our component, and after initialization, assign the `person` property to our Web Component :
+Let's head to React, where things are a bit different. React pass props as JSX Attributes, and therefore, simply doing `<demo-profile person={person} />` will not work. We need to treat our Web Component as what it is, an HTML Element. So, get the reference and assign to it the property.
+
+In your React app, add a Reference to our component, and after initialization, assigns the `person` property to our Web Component :
 
 ```
-  import { DemoCounterElement, DemoProfileElement } from '@demo-shared/demo-library';
+import { DemoCounterElement, DemoProfileElement } from '@demo-shared/demo-library';
 
 export function App() {
   const person = {
@@ -299,10 +339,13 @@ export function App() {
 
 ```
 
-And this is all for React. Start the project, and you will see the same result!
+This is all also for React; start the project, and you will see the same result!
+
+![React With Person Profile](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/477d9r5nhecnqge3in83.png "React With Person Profile")
+
 
 Great, we did almost all we would like to do, but there are still some things we might want to add.
-In the last part, we will add some custom events to be dispatched from our Web Component and add polyfill to use our component on old browsers.
+In the last part, we will add some custom events to be dispatched in our Web Component and add polyfill to use our component on old browsers.
 
 You can find the entire repo here :
 
