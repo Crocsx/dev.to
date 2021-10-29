@@ -21,17 +21,17 @@ export class DemoCounterElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot!.appendChild(template.content.cloneNode(true));
-    this.shadowRoot!.getElementById('btCounter')!.onclick = () => this.addClick();
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.shadowRoot.getElementById('btCounter').onclick = () => this.addClick();
   }
 
   addClick() {
     this.update(++this.counter);
-    this.shadowRoot!.dispatchEvent(new CustomEvent<{ counter: number }>('userClick', {detail: { counter: this.counter }}));
+    this.shadowRoot.dispatchEvent(new CustomEvent<{ counter: number }>('userClick', {detail: { counter: this.counter }}));
   }
 
   update(count: number) {
-    this.shadowRoot!.getElementById('counter')!.innerHTML = count.toString();
+    this.shadowRoot.getElementById('counter').innerHTML = count.toString();
   }
 }
   

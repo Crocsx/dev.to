@@ -12,11 +12,11 @@ export class DemoTitleColoredElement extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-      this.shadowRoot!.appendChild(template.content.cloneNode(true));
+      this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
   
     attributeChangedCallback() {
-      this.shadowRoot!.getElementById('title')!.innerHTML = this.title;
+      this.shadowRoot.getElementById('title').innerHTML = this.title;
     }
 }
     

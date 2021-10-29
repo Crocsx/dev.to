@@ -31,12 +31,12 @@ export class DemoProfileElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot!.appendChild(template.content.cloneNode(true));
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
   }
 
-  update(value: {firstName: string, lastName: string}) {
-    this.shadowRoot!.getElementById('firstName')!.innerHTML = this.person.firstName.toString();
-    this.shadowRoot!.getElementById('lastName')!.innerHTML = this.person.lastName.toString();
+  update(person: {firstName: string, lastName: string}) {
+    this.shadowRoot.getElementById('firstName').innerHTML = person.firstName;
+    this.shadowRoot.getElementById('lastName').innerHTML = person.lastName;
   }
 }
   

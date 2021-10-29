@@ -75,7 +75,7 @@ export class DemoTitleColoredElement extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-      this.shadowRoot!.appendChild(template.content.cloneNode(true));
+      this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 }
 ```
@@ -83,7 +83,7 @@ Here is what we added
 
 - `super` will call the `constructor` of `HTMLElement` 
 - `attachShadow`attaches a shadow DOM tree to the specified element and returns a reference to its ShadowRoot. There can be two different `encapsulation modes`. `open` means elements of the shadow root are accessible from JavaScript outside the root while `closed` Denies access to the node(s) of a closed shadow root from JavaScript outside
-- `this.shadowRoot!.appendChild` we are adding our template to the shadow Root and using `template.content.cloneNode(true)` we are cloning all the DOM element we defined in the template.
+- `this.shadowRoot.appendChild` we are adding our template to the shadow Root and using `template.content.cloneNode(true)` we are cloning all the DOM element we defined in the template.
 
 Now, this is much better; our template is cloned once and will be available through `shadowRoot` inside the component. 
 
@@ -91,7 +91,7 @@ When the attribute change, we can now update what interests us inside the templa
 
 ```
     attributeChangedCallback() {
-      this.shadowRoot!.getElementById('title')!.innerHTML = this.title;
+      this.shadowRoot.getElementById('title').innerHTML = this.title;
     }
 ```
 
@@ -112,11 +112,11 @@ export class DemoTitleColoredElement extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-      this.shadowRoot!.appendChild(template.content.cloneNode(true));
+      this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
   
     attributeChangedCallback() {
-      this.shadowRoot!.getElementById('title')!.innerHTML = this.title;
+      this.shadowRoot.getElementById('title').innerHTML = this.title;
     }
 }
     
@@ -242,7 +242,7 @@ export class DemoProfileElement extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-      this.shadowRoot!.appendChild(template.content.cloneNode(true));
+      this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
   
     attributeChangedCallback() {
@@ -250,8 +250,8 @@ export class DemoProfileElement extends HTMLElement {
     }
   
     update(person: {firstName: string, lastName: string}) {
-      this.shadowRoot!.getElementById('firstName')!.innerHTML = person.firstName;
-      this.shadowRoot!.getElementById('lastName')!.innerHTML = person.lastName;
+      this.shadowRoot.getElementById('firstName').innerHTML = person.firstName;
+      this.shadowRoot.getElementById('lastName').innerHTML = person.lastName;
     }
   }
     
@@ -282,13 +282,13 @@ export class DemoProfileElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot!.appendChild(template.content.cloneNode(true));
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
   }
 
-  update(value: {firstName: string, lastName: string}) {
-    this.shadowRoot!.getElementById('firstName')!.innerHTML = this.person.firstName.toString();
-    this.shadowRoot!.getElementById('lastName')!.innerHTML = this.person.lastName.toString();
-  }
+    update(person: {firstName: string, lastName: string}) {
+      this.shadowRoot.getElementById('firstName').innerHTML = person.firstName;
+      this.shadowRoot.getElementById('lastName').innerHTML = person.lastName;
+    }
 }
   
 customElements.define('demo-profile', DemoProfileElement);
