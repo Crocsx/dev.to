@@ -13,18 +13,33 @@ export function App() {
   const counter = useRef<DemoCounterElement>(null);
   const profile = useRef<DemoProfileElement>(null);
 
-  useEffect(function () {
+  const onIncrement = (e) => {
+    console.log(e)
+  }
+  useEffect(() => {
+    let counterRef = null; 
     if(counter.current) {
-      counter.current.counter = 5
+      counterRef = counter.current;
+      counter.current.count = 2
+      counterRef.addEventListener('incremented', onIncrement)
     }
     if(profile.current) {
       profile.current.person = person 
     }
-  }, []);
-  
+    return () => {
+      if(counterRef) {
+        counterRef.removeEventListener('incremented', onIncrement)
+      }
+    }
+  })
+
   return (
     <div className={styles.app}>
+      <demo-title title={"React"} />
+      <demo-title-colored title={"React"} />
+      <demo-object dataPerson={JSON.stringify(person)}/>
       <demo-profile ref={profile}/>
+      <demo-counter ref={counter} onIncremented={(e: Event) =>  console.log(e)} />
     </div>
   );
 }

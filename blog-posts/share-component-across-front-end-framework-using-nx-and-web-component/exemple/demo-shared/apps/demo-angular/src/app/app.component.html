@@ -2,4 +2,4 @@
 <demo-title-colored [title]="'Angular'"></demo-title-colored>
 <demo-object [attr.data-person]="JSON.stringify(person)"></demo-object>
 <demo-profile [person]="person"></demo-profile>
-<demo-counter [counter]="3" (userClick)="clicked($event)"></demo-counter>
+<demo-counter [count]="3" (incremented)="clicked($event)"></demo-counter>
