@@ -17,6 +17,9 @@
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */
+ import "@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js"
+ import "@webcomponents/webcomponentsjs/webcomponents-loader.js"
+
 
 /**
  * IE11 requires the following for NgClass support on SVG elements

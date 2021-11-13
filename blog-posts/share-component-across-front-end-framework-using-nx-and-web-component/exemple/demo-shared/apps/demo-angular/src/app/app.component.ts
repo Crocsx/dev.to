@@ -14,8 +14,6 @@ export class AppComponent {
     lastName: 'Doe'
   }
 
-  
-
   clicked(event: Event) {
     console.log(event)
   }
