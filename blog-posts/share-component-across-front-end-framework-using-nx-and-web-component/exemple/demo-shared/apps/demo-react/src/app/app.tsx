@@ -17,14 +17,10 @@ export function App() {
     console.log(e)
   }
   useEffect(() => {
-    let counterRef = null; 
-    if(counter.current) {
-      counterRef = counter.current;
-      counter.current.count = 2
+    const counterRef = counter.current; 
+    if(counterRef) {
+      counterRef.count = 2
       counterRef.addEventListener('incremented', onIncrement)
-    }
-    if(profile.current) {
-      profile.current.person = person 
     }
     return () => {
       if(counterRef) {
