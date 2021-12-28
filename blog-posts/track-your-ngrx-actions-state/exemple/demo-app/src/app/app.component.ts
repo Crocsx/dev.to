@@ -1,4 +1,4 @@
-import { Component, VERSION } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { filter, Observable, takeWhile, tap } from 'rxjs';
