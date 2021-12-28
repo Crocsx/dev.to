@@ -1,0 +1,47 @@
+.wrapper {
+  display: flex;
+  height: 100%;
+}
+
+.list {
+  width: 50%;
+}
+
+.form {
+  width: 50%;
+}
+
+.user-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0.25rem;
+  border: solid 1px black;
+}
+
+.user-deleting {
+  background-color: #cfcfcf6b;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+}
+.username-input {
+  padding: 1rem 0.25rem;
+  margin: 1rem 0;
+}
+
+.submit-input {
+  padding: 1rem 0.25rem;
+  margin: 1rem 0;
+}
+
+.button-content {
+  display: flex;
+  justify-content: space-evenly;
+}

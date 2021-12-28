@@ -1,0 +1,41 @@
+<div class="wrapper">
+  <div class="list">
+    <ng-template [ngIf]="!(usersLoading$ | async)" [ngIfElse]="loader">
+      <div
+        *ngFor="let user of users$ | async"
+        [ngClass]="{
+          'user-container': true,
+          'user-deleting': (userDeleting$ | async) && user.id === removeId
+        }"
+      >
+        <span>{{ user.username }}</span>
+        <span class="pointer">
+          <ng-template
+            [ngIf]="!((userDeleting$ | async) && user.id === removeId)"
+            [ngIfElse]="loader"
+          >
+            <span (click)="deleteUser(user.id)">Delete</span>
+          </ng-template>
+        </span>
+      </div>
+    </ng-template>
+  </div>
+  <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <input
+      [placeholder]="'username'"
+      [formControlName]="'username'"
+      class="username-input"
+    />
+    <button type="submit" class="submit-input">
+      <div class="button-content">
+        <ng-template [ngIf]="!(userCreating$ | async)" [ngIfElse]="loader">
+          Create
+        </ng-template>
+      </div>
+    </button>
+  </form>
+</div>
+
+<ng-template #loader>
+  <app-spinner></app-spinner>
+</ng-template>
